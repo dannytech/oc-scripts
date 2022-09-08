@@ -44,7 +44,7 @@ if #args >= 2 then
     -- read the ROM file
     if fs.exists(filename) then
         local file = io.open(filename, "rb")
-        rom = rom..file:read("*a")
+        rom = rom.."\n"..file:read("*a")
         file:close()
     else
         io.stderr:write("ROM file not found\n")
