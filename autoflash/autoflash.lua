@@ -15,6 +15,11 @@ event.listen("modem_message", function(_, _, from, port, _, message, rom)
       -- write the revceived ROM to the EEPROM
       eeprom.set(rom)
 
+      -- success beeps
+      for i = 1, 3 do
+        computer.beep(1000, 0.1)
+      end
+
       -- reboot into the new ROM
       computer.shutdown(true)
     end
