@@ -4,8 +4,11 @@ local modem = component.proxy(component.list("modem")())
 local filesystem = component.proxy(component.list("filesystem")())
 local shell = require("shell")
 
+-- parse shell arguments
+local args, opts = shell.parse()
+
 -- usage instructions
-if #arg == 0 and not options.f then
+if #args == 0 and not options.f then
     io.stdout:write("Usage: autoflash-client [-f] [ip] [eeprom.lua]\n")
     io.stdout:write("  f: do not write an autoflash server to the EEPROM\n")
     io.stdout:write("  ip: the IP address of the device to flash\n")
@@ -15,7 +18,7 @@ if #arg == 0 and not options.f then
     return
 end
 
-if #arg < 2 and options.f then
+if #args < 2 and options.f then
     io.stderr:write("Must either specify a ROM or remove the -f flag.\n")
     return
 end
@@ -39,8 +42,8 @@ if not options.f then
 end
 
 -- read the provided ROM file, if any
-if #arg >= 2 then
-    local filename = shell.resolve(arg[2])
+if #args >= 2 then
+    local filename = shell.resolve(args[2])
 
     -- read the ROM file
     if fs.exists(filename) then
@@ -54,7 +57,7 @@ if #arg >= 2 then
 end
 
 -- get the IP address of the target system
-local ip = arg[1]
+local ip = args[1]
 
 event.pull("modem_message", function(_, _, from, port, _, command)
     if port == 122 then
