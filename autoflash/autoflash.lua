@@ -18,7 +18,7 @@ if leftover < 10 then
   -- wait for a flash request
   message = computer.pullSignal(leftover)
 
-  if message != nil then
+  if message ~= nil then
     _, _, from, port, _, command, rom = message
 
     if port == 122 and command == "af_flash" then

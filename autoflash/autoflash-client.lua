@@ -29,7 +29,7 @@ if not options.f then
 
     -- read the autoflash ROM
     if fs.exists(filename) then
-        local file = io.open(, "rb")
+        local file = io.open(filename, "rb")
         rom = rom..file:read("*a")
         file:close()
     else
