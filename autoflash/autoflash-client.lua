@@ -1,7 +1,7 @@
 -- write a ROM over the network to a device running autoflash
 
 local modem = component.proxy(component.list("modem")())
-local filesystem = component.proxy(component.list("filesystem")())
+local fs = component.proxy(component.list("filesystem")())
 local shell = require("shell")
 
 -- parse shell arguments
