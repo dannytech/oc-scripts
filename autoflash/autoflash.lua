@@ -2,28 +2,39 @@
 -- note that writing the EEPROM will overwrite this program, so the client should send a copy of this program
 -- every time if this functionality needs to be preserved.
 
-(function ()
-  local modem = component.proxy(component.list("modem")())
-  local drone = component.proxy(component.list("drone")())
-  local eeprom = component.proxy(component.list("eeprom")())
+local modem = component.proxy(component.list("modem")())
+local drone = component.proxy(component.list("drone")())
+local eeprom = component.proxy(component.list("eeprom")())
 
-  -- listen for incoming flash connections
-  modem.open(122)
-  drone.setStatusText("My address is "..modem.address.."\n")
+-- start a timer for flash messages
+local startup = os.time()
 
-  -- when a remote flash message is received, write the data to the EEPROM
-  event.listen("modem_message", function(_, _, from, port, _, message, rom)
-      if port == 122 and message == "remote_flash" then
-        -- write the received ROM to the EEPROM
-        eeprom.set(rom)
+-- register the current device with the flash server
+modem.broadcast(122, "af_register", component.address)
 
-        -- success beeps
-        for i = 1, 3 do
-          computer.beep(1000, 0.1)
-        end
+-- check if a flash request is queued
+::connect::
+local leftover = os.difftime(startup, os.time())
+if leftover < 10 then
+  -- wait for a flash request
+  message = computer.pullSignal(leftover)
 
-        -- reboot into the new ROM
-        computer.shutdown(true)
+  if message != nil then
+    _, _, from, port, _, command, rom = message
+
+    if port == 122 and command == "af_flash" then
+      -- write the received ROM to the EEPROM
+      eeprom.set(rom)
+
+      -- success beeps
+      for i = 1, 3 do
+        computer.beep(1000, 0.1)
       end
-  end)
-end)()
+
+      -- reboot into the new ROM
+      computer.shutdown(true)
+    end
+  end
+end
+
+computer.beep(800, 0.5)

@@ -6,10 +6,11 @@ local filesystem = component.proxy(component.list("filesystem")())
 
 -- usage instructions
 if #args == 0 and not options.f then
-    io.stdout:write("Usage: autoflash-client [-f] <ip> [eeprom.lua]\n")
+    io.stdout:write("Usage: autoflash-client [-f] [ip] [eeprom.lua]\n")
     io.stdout:write("  f: do not write an autoflash server to the EEPROM\n")
-    io.stdout:write("  ip: the IP address of the server\n")
+    io.stdout:write("  ip: the IP address of the device to flash\n")
     io.stdout:write("  file: the path to the ROM to write\n")
+    io.stdout:write("If no IP is specified, ")
     io.stdout:write("If no file is specified, a blank autoflash ROM will be written.\n")
     return
 end
@@ -55,7 +56,19 @@ end
 -- get the IP address of the target system
 local ip = args[1]
 
--- send the ROM to the target system
-if #rom > 0 then
-    modem.send(ip, 122, "remote_flash", rom)
-end
+event.pull("modem_message", function(_, _, from, port, _, command)
+    if port == 122 then
+        -- listen for autoflash registrations
+        if command == "af_register" then
+            if ip == nil then
+                -- listen for registrations
+                io.stderr:write("Registration from "..from.."\n")
+            else
+                -- send the ROM
+                if from == ip and #rom > 0 then
+                    modem.send(ip, 122, "af_flash", rom)
+                end
+            end
+        end
+    end
+end)
