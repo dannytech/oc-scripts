@@ -8,9 +8,10 @@ local shell = require("shell")
 local args, opts = shell.parse()
 
 -- usage instructions
-if #args == 0 and not opts.f then
+if opts.h then
     io.stdout:write("Usage: autoflash-client [-f] [ip] [eeprom.lua]\n")
     io.stdout:write("  f: do not write an autoflash server to the EEPROM\n")
+    io.stdout:write("  h: print this help message\n")
     io.stdout:write("  ip: the IP address of the device to flash\n")
     io.stdout:write("  file: the path to the ROM to write\n")
     io.stdout:write("If no IP is specified, listens for device identifier broadcasts.\n")
@@ -59,19 +60,22 @@ end
 -- get the IP address of the target system
 local ip = args[1]
 
-event.pull("modem_message", function(_, _, from, port, _, command)
-    if port == 122 then
-        -- listen for autoflash registrations
-        if command == "af_register" then
-            if ip == nil then
-                -- listen for registrations
-                io.stderr:write("Registration from "..from.."\n")
-            else
-                -- send the ROM
-                if from == ip and #rom > 0 then
-                    modem.send(ip, 122, "af_flash", rom)
-                end
+::connect::
+_, _, from, port, _, command = event.pull("modem_message")
+if port == 122 then
+    -- listen for autoflash registrations
+    if command == "af_register" then
+        if ip == nil then
+            -- listen for registrations
+            io.stderr:write("Registration from "..from.."\n")
+        else
+            -- send the ROM
+            if from == ip and #rom > 0 then
+                modem.send(ip, 122, "af_flash", rom)
+                os.exit(0)
             end
         end
     end
-end)
+end
+
+goto connect
