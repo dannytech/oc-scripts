@@ -67,7 +67,7 @@ if port == 122 then
     if command == "af_register" then
         if ip == nil then
             -- listen for registrations
-            io.stderr:write("Registration from "..from.."\n")
+            io.stdout:write("Registration from "..from.."\n")
         else
             -- send the ROM
             if from == ip and #rom > 0 then
