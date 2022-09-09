@@ -35,5 +35,3 @@ if passed < 10 then
     end
   end
 end
-
-computer.beep(800, 0.5)
