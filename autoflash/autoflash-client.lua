@@ -5,7 +5,7 @@ local fs = component.proxy(component.list("filesystem")())
 local shell = require("shell")
 
 -- parse shell arguments
-local args, opts = shell.parse()
+local args, opts = shell.parse(...)
 
 -- usage instructions
 if opts.h then
