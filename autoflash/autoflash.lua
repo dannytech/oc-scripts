@@ -3,7 +3,6 @@
 -- every time if this functionality needs to be preserved.
 
 local modem = component.proxy(component.list("modem")())
-local drone = component.proxy(component.list("drone")())
 local eeprom = component.proxy(component.list("eeprom")())
 
 -- start a timer for flash messages
