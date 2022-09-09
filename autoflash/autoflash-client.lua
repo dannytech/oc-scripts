@@ -18,7 +18,7 @@ if #args == 0 and not options.f then
     return
 end
 
-if #args < 2 and options.f then
+if #args < 2 and opts.f then
     io.stderr:write("Must either specify a ROM or remove the -f flag.\n")
     return
 end
@@ -27,7 +27,7 @@ end
 local rom = ""
 
 -- prepend an autoflash ROM to allow continued remote flashing
-if not options.f then
+if not opts.f then
     local filename = shell.resolve("autoflash.lua")
 
     -- read the autoflash ROM
