@@ -5,11 +5,14 @@
 local modem = component.proxy(component.list("modem")())
 local eeprom = component.proxy(component.list("eeprom")())
 
--- start a timer for flash messages
-local startup = os.time()
+-- start listening for flash messages
+modem.open(122)
 
 -- register the current device with the flash server
 modem.broadcast(122, "af_register", component.address)
+
+-- start a timer for flash messages
+local startup = os.time()
 
 -- check if a flash request is queued
 ::connect::
@@ -19,7 +22,7 @@ if passed < 10 then
   message = computer.pullSignal(10 - passed)
 
   if message ~= nil then
-    _, _, from, port, _, command, rom = message
+    _, _, _, port, _, command, rom = message
 
     if port == 122 and command == "af_flash" then
       -- write the received ROM to the EEPROM
