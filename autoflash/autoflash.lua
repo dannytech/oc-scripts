@@ -19,22 +19,20 @@ local startup = os.time()
 local passed = os.difftime(startup, os.time())
 if passed < 10 then
   -- wait for a flash request
-  message = computer.pullSignal(10 - passed)
+  message, _, _, port, _, command, rom = computer.pullSignal(10 - passed)
 
-  if message ~= nil then
-    _, _, _, port, _, command, rom = message
+  if message == "modem_message" and port == 122 and command == "af_flash" then
+    -- write the received ROM to the EEPROM
+    eeprom.set(rom)
 
-    if port == 122 and command == "af_flash" then
-      -- write the received ROM to the EEPROM
-      eeprom.set(rom)
-
-      -- success beeps
-      for i = 1, 3 do
-        computer.beep(1000, 0.1)
-      end
-
-      -- reboot into the new ROM
-      computer.shutdown(true)
+    -- success beeps
+    for i = 1, 3 do
+      computer.beep(1000, 0.1)
     end
+
+    -- reboot into the new ROM
+    computer.shutdown(true)
   end
 end
+
+modem.close()
