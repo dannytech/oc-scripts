@@ -13,10 +13,10 @@ modem.broadcast(122, "af_register", component.address)
 
 -- check if a flash request is queued
 ::connect::
-local leftover = os.difftime(startup, os.time())
-if leftover < 10 then
+local passed = os.difftime(startup, os.time())
+if passed < 10 then
   -- wait for a flash request
-  message = computer.pullSignal(leftover)
+  message = computer.pullSignal(10 - passed)
 
   if message ~= nil then
     _, _, from, port, _, command, rom = message
