@@ -13,7 +13,7 @@ if #args == 0 and not options.f then
     io.stdout:write("  f: do not write an autoflash server to the EEPROM\n")
     io.stdout:write("  ip: the IP address of the device to flash\n")
     io.stdout:write("  file: the path to the ROM to write\n")
-    io.stdout:write("If no IP is specified, ")
+    io.stdout:write("If no IP is specified, listens for device identifier broadcasts.\n")
     io.stdout:write("If no file is specified, a blank autoflash ROM will be written.\n")
     return
 end
