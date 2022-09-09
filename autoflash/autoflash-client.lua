@@ -8,7 +8,7 @@ local shell = require("shell")
 local args, opts = shell.parse()
 
 -- usage instructions
-if #args == 0 and not options.f then
+if #args == 0 and not opts.f then
     io.stdout:write("Usage: autoflash-client [-f] [ip] [eeprom.lua]\n")
     io.stdout:write("  f: do not write an autoflash server to the EEPROM\n")
     io.stdout:write("  ip: the IP address of the device to flash\n")
