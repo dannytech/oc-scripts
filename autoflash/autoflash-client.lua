@@ -9,26 +9,26 @@ local args, opts = shell.parse()
 
 -- usage instructions
 if opts.h then
-    io.stdout:write("Usage: autoflash-client [-f] [ip] [eeprom.lua]\n")
+    io.stdout:write("Usage: autoflash-client [-fh] [ip] [eeprom.lua]\n")
     io.stdout:write("  f: do not write an autoflash server to the EEPROM\n")
     io.stdout:write("  h: print this help message\n")
     io.stdout:write("  ip: the IP address of the device to flash\n")
     io.stdout:write("  file: the path to the ROM to write\n")
     io.stdout:write("If no IP is specified, listens for device identifier broadcasts.\n")
     io.stdout:write("If no file is specified, a blank autoflash ROM will be written.\n")
-    return
+    os.exit(0)
 end
 
 if #args < 2 and opts.f then
     io.stderr:write("Must either specify a ROM or remove the -f flag.\n")
-    return
+    os.exit(0)
 end
 
 -- hold the complete ROM in memory
 local rom = ""
 
 -- prepend an autoflash ROM to allow continued remote flashing
-if not opts.f then
+if #args >= 1 then
     local filename = shell.resolve("autoflash.lua")
 
     -- read the autoflash ROM
@@ -38,7 +38,7 @@ if not opts.f then
         file:close()
     else
         io.stderr:write("Autoflash ROM file not found\n")
-        return
+        os.exit(0)
     end
 end
 
