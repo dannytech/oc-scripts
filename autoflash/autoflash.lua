@@ -46,10 +46,10 @@ end)()
 local code = string.gmatch(firmware, "-%-%[=====%[(.*)-%-%]=====%]")()
 
 -- load and run the code
-local success = false
+local success = true
 local bin, err = load(code)
 if bin then
-  local success, err = pcall(bin)
+  success, err = pcall(bin)
 else success = false end
 
 -- throw any errors
