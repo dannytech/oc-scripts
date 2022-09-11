@@ -32,7 +32,7 @@
       end
 
       -- reboot into the new ROM
-      computer.shutdown(true)
+      computer.shutdown()
     end
   end
 

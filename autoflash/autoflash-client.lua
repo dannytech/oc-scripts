@@ -2,6 +2,7 @@
 
 local component = require("component")
 local shell = require("shell")
+local event = require("event")
 local modem = component.proxy(component.list("modem")())
 local fs = component.proxy(component.list("filesystem")())
 
@@ -28,7 +29,7 @@ local ip = args[1]
 local firmware = args[2]
 
 -- require a rom file if the finalize flag is set
-if romfile == nil and opts.f then
+if firmware == nil and opts.f then
   io.stderr:write("Must either specify a ROM or remove the -f flag.\n")
   os.exit(0)
 end
@@ -37,7 +38,7 @@ end
 local rom = ""
 
 -- prepend an autoflash ROM to allow continued remote flashing
-if #args >= 1 then
+if not opts.f and #args >= 1 then
   local filename = shell.resolve("autoflash.lua")
 
   -- read the autoflash ROM
