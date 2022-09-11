@@ -82,4 +82,4 @@ if #rom > 0 then
 end
 
 -- close out the interrupt event listener
-event.ignore(eid)
+event.cancel(eid)
