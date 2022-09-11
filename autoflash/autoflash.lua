@@ -2,7 +2,7 @@
 -- note that writing the EEPROM will overwrite this program, so the client should send a copy of this program
 -- every time if this functionality needs to be preserved.
 
-(function()
+local firmware = (function()
   local modem = component.proxy(component.list("modem")())
   local eeprom = component.proxy(component.list("eeprom")())
 
@@ -31,21 +31,26 @@
         computer.beep(1000, 0.1)
       end
 
-      -- reboot into the new ROM
+      -- shutdown to allow the client to stop flashing
       computer.shutdown()
     end
   end
 
   modem.close()
+
+  -- return the eeprom to evaluate before this scope is destroyed
+  return eeprom.get()
 end)()
 
--- loads the commented ROM from the EEPROM
-local code = string.gmatch(eeprom.get(), "-%-%[=====%[(.)-%-%]=====%]")()
+-- load the flashed firmware from the EEPROM
+local code = string.gmatch(firmware, "-%-%[=====%[(.*)-%-%]=====%]")()
 
 -- load and run the code
+local success = false
 local bin, err = load(code)
 if bin then
-  local _, err = pcall(bin)
+  local success, err = pcall(bin)
+else success = false end
 
 -- throw any errors
-if err then error(err)
+if not success then error(err) end
