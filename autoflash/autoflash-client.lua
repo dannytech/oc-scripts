@@ -44,7 +44,7 @@ if not opts.f and #args >= 1 then
   -- read the autoflash ROM
   if fs.exists(filename) then
     local file = io.open(filename, "rb")
-    rom = rom .. file:read("*a")
+    rom = rom .. file:read("*a") .. "\n"
     file:close()
   else
     io.stderr:write("Autoflash ROM file not found\n")
@@ -59,7 +59,7 @@ if #args >= 2 then
   -- read the ROM file
   if fs.exists(filename) then
     local file = io.open(filename, "rb")
-    rom = rom .. "\n" .. file:read("*a")
+    rom = rom .. file:read("*a")
     file:close()
   else
     io.stderr:write("ROM file not found\n")
@@ -67,17 +67,16 @@ if #args >= 2 then
   end
 end
 
--- handle SIGINT
-event.listen("interrupted", function()
-  modem.close(AF_PORT)
-  os.exit(1)
-end)
-
 -- send the ROM in a loop
 if #rom > 0 then
   while true
   do
     modem.send(ip, AF_PORT, "autoflash", rom)
-    os.sleep(AF_WAIT / 2.5) -- ensure there are at least two flash attempts before the timeout
+
+    -- handle SIGINT during the wait until the next flash attempt
+    event.pull(AF_WAIT / 2.5, "interrupted", function()
+      modem.close(AF_PORT)
+      os.exit(1)
+    end)
   end
 end
