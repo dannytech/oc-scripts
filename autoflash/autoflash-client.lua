@@ -67,16 +67,19 @@ if #args >= 2 then
   end
 end
 
+local running = true
+local eid = event.listen("interrupted", function()
+  running = false
+end)
+
 -- send the ROM in a loop
 if #rom > 0 then
-  while true
+  while running
   do
     modem.send(ip, AF_PORT, "autoflash", rom)
-
-    -- handle SIGINT during the wait until the next flash attempt
-    event.pull(AF_WAIT / 2.5, "interrupted", function()
-      modem.close(AF_PORT)
-      os.exit(1)
-    end)
+    os.sleep(AF_WAIT / 2.5) -- trigger at least 2 firmware flash requests during each startup period
   end
 end
+
+-- close out the interrupt event listener
+event.ignore(eid)
