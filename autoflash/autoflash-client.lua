@@ -23,7 +23,6 @@ if (#args == 0 and #opts == 0) or opts.h then
   os.exit(0)
 end
 
-
 -- get the IP address of the target system and the firmware to upload
 local ip = args[1]
 local firmware = args[2]
@@ -67,6 +66,7 @@ if #args >= 2 then
   end
 end
 
+-- listen for soft interrupts
 local running = true
 local eid = event.listen("interrupted", function()
   running = false
