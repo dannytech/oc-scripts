@@ -38,3 +38,14 @@
 
   modem.close()
 end)()
+
+-- loads the commented ROM from the EEPROM
+local code = string.gmatch(eeprom.get(), "-%-%[=====%[(.)-%-%]=====%]")()
+
+-- load and run the code
+local bin, err = load(code)
+if bin then
+  local _, err = pcall(bin)
+
+-- throw any errors
+if err then error(err)
