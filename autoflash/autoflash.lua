@@ -37,4 +37,4 @@
   end
 
   modem.close()
-end)
+end)()
